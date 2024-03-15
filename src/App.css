@@ -1,0 +1,74 @@
+.image-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px); 
+}
+
+.image-wrapper {
+  overflow: hidden;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+}
+
+.image {
+  width: 100%;
+  height: 100%; 
+  object-fit: cover;
+  border-radius: 8px; 
+}
+.title {
+  font-size: 48px; 
+  font-weight: bold; 
+  color: #ff4500; 
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
+  animation: pulse 1s infinite alternate; /* Animación para un efecto de pulsación
+}
+
+@keyframes pulse {
+  from {
+      transform: scale(1);
+  }
+  to {
+      transform: scale(1.1);
+  }
+}
+.menu-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: 40px; /* Ajusta esta posición según sea necesario */
+  right: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu ul li {
+  margin-bottom: 5px;
+}
+
+.menu ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+}
+
+.menu ul li a:hover {
+  color: #000;
+}
