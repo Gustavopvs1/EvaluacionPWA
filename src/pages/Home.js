@@ -33,7 +33,6 @@ const Home = () => {
       {/* <button className="menu-button" onClick={toggleMenu}>
                 <i className="material-icons">menu</i>
             </button> */}
-      <CustomNavbar />
       <div className="image-container">
         <ListImages images={images} />
       </div>
