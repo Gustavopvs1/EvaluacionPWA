@@ -4,7 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Form from "react-bootstrap/Form";
 
-function CustomNavbar({ isUserLoggedIn }) {
+function CustomNavbar({ isUserLoggedIn, userPhotoURL }) {
   const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ function CustomNavbar({ isUserLoggedIn }) {
             {isLogged ? (
               <Nav.Link href="#profile" className="nav-link-custom">
                 <img
-                  src="path/to/profile-photo.jpg"
+                  src={userPhotoURL || "path/to/default-photo.jpg"}
                   alt="Profile"
                   width="50"
                   height="50"

@@ -1,6 +1,5 @@
 import React from "react";
 import { signInWithGooglePopup } from "../firebase";
-import CustomNavbar from "../components/CustomNavbar";
 import { useNavigate } from "react-router-dom";
 
 function Login() {

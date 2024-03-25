@@ -21,10 +21,16 @@ const AppRoutes = () => {
 
 const App = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(null);
+  const [userPhotoURL, setUserPhotoURL] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsUserLoggedIn(!!user);
+      if (user) {
+        setUserPhotoURL(user.photoURL);
+      } else {
+        setUserPhotoURL(null);
+      }
     });
 
     return unsubscribe;
@@ -33,7 +39,10 @@ const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <CustomNavbar isUserLoggedIn={isUserLoggedIn} />
+        <CustomNavbar
+          isUserLoggedIn={isUserLoggedIn}
+          userPhotoURL={userPhotoURL}
+        />
         <AppRoutes />
       </BrowserRouter>
     </div>
