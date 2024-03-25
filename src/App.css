@@ -1,29 +1,36 @@
 .image-container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-gap: 20px;
-  overflow-y: auto;
-  max-height: calc(100vh - 100px); 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 16px;
 }
 
 .image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 8px;
+  border-radius: 16px;
   overflow: hidden;
-  border-radius: 10px;
-  border: 2px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.image-wrapper:hover {
+  transform: scale(1.05);
 }
 
 .image {
+  display: block;
   width: 100%;
-  height: 100%; 
-  object-fit: cover;
-  border-radius: 8px; 
+  height: 100%;
+  object-fit: cover; /* Add this line */
+  border-radius: inherit;
 }
 .title {
   font-size: 48px; 
   font-weight: bold; 
   color: #ff4500; 
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
-  animation: pulse 1s infinite alternate; /* Animación para un efecto de pulsación
+  animation: pulse 1s infinite alternate; 
 }
 
 @keyframes pulse {
@@ -71,4 +78,25 @@
 
 .menu ul li a:hover {
   color: #000;
+}
+
+
+.navbar-custom {
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+.brand-custom {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.nav-link-custom {
+  font-size: 1.5rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.form-control-custom {
+  font-size: 1.5rem;
+  padding: 0.75rem 1.25rem;
 }
