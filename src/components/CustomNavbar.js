@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Form from "react-bootstrap/Form";
-
-function CustomNavbar({ isUserLoggedIn, userPhotoURL }) {
+import { UserContext } from "../customHooks/UserContext";
+import { auth } from "../firebase";
+function CustomNavbar() {
+  const user = useContext(UserContext);
   const [isLogged, setIsLogged] = useState(false);
 
   useEffect(() => {
-    setIsLogged(isUserLoggedIn);
-  }, [isUserLoggedIn]);
+    if (user) {
+      console.log("CustomNavbar: User logged in:", user);
+      setIsLogged(true);
+    }
+  }, [user]);
+
+  const logout = () => {
+    console.log("logout: cerrando sesion");
+    auth.signOut();
+    setIsLogged(false);
+  };
 
   return (
     <Navbar expand="xxl" className="bg-body-tertiary navbar-custom">
       <Container>
-        <Navbar.Brand href="#home" className="brand-custom">
+        <Navbar.Brand href="/" className="brand-custom">
           Pinterestn't Home
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -32,15 +43,24 @@ function CustomNavbar({ isUserLoggedIn, userPhotoURL }) {
           </Form>
           <Nav>
             {isLogged ? (
-              <Nav.Link href="#profile" className="nav-link-custom">
-                <img
-                  src={userPhotoURL || "path/to/default-photo.jpg"}
-                  alt="Profile"
-                  width="50"
-                  height="50"
-                  className="rounded-circle"
-                />
-              </Nav.Link>
+              <>
+                <Nav.Link href="#profile" className="nav-link-custom">
+                  <img
+                    src={user?.photoURL || "path/to/default-photo.jpg"}
+                    alt="Profile"
+                    width="50"
+                    height="50"
+                    className="rounded-circle"
+                  />
+                </Nav.Link>
+                <Nav.Link
+                  href="/login"
+                  className="nav-link-custom"
+                  onClick={logout}
+                >
+                  logout
+                </Nav.Link>
+              </>
             ) : (
               <>
                 <Nav.Link href="/login" className="nav-link-custom">

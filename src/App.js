@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useRoutes, BrowserRouter } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useRoutes, BrowserRouter, Navigate } from "react-router-dom"; // Import Navigate for conditional redirection
 import Home from "./pages/Home";
 import Perfil from "./pages/Perfil";
 import "./App.css";
@@ -8,42 +8,38 @@ import NotFound from "./pages/NotFound";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import CustomNavbar from "./components/CustomNavbar";
+import { UserProvider, UserContext } from "./customHooks/UserContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AppRoutes = () => {
-  let routes = useRoutes([
-    { path: "/perfil", element: <Perfil /> },
-    { path: "/login", element: <Login /> },
+const AppRoutes = ({ isUserLoggedIn }) => {
+  return useRoutes([
+    {
+      path: "/perfil",
+      element: isUserLoggedIn ? <Perfil /> : <Navigate to="/login" />,
+    }, // Redirect to login if not logged in
+    {
+      path: "/login",
+      element: isUserLoggedIn ? <Navigate to="/" /> : <Login />,
+    }, // Redirect to home if already logged in
     { path: "/", element: <Home /> },
     { path: "*", element: <NotFound /> },
   ]);
-  return routes;
 };
 
 const App = () => {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(null);
-  const [userPhotoURL, setUserPhotoURL] = useState(null);
+  const user = useContext(UserContext); // Access user context
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsUserLoggedIn(!!user);
-      if (user) {
-        setUserPhotoURL(user.photoURL);
-      } else {
-        setUserPhotoURL(null);
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+  const isUserLoggedIn = user !== null; // Determine if user is logged in
 
   return (
     <div className="App">
       <BrowserRouter>
-        <CustomNavbar
-          isUserLoggedIn={isUserLoggedIn}
-          userPhotoURL={userPhotoURL}
-        />
-        <AppRoutes />
+        <UserProvider>
+          <ToastContainer />
+          <CustomNavbar isUserLoggedIn={isUserLoggedIn} />
+          <AppRoutes isUserLoggedIn={isUserLoggedIn} />
+        </UserProvider>
       </BrowserRouter>
     </div>
   );
