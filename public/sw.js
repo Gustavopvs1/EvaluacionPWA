@@ -78,3 +78,16 @@ self.addEventListener('offline', sendConnectionStatus);
 
 // Inicializa el estado de conexión al inicio
 sendConnectionStatus();
+
+// Manejar los mensajes del cliente
+self.addEventListener('message', (event) => {
+    if (event.data.action === 'saveUserData') {
+        // Almacenar los datos del usuario en el almacenamiento local (local storage)
+        localStorage.setItem('userData', JSON.stringify(event.data.userData));
+    } else if (event.data.action === 'getUserData') {
+        // Obtener los datos del usuario del almacenamiento local (local storage)
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        // Enviar los datos del usuario al cliente
+        event.source.postMessage({ action: 'userData', userData });
+    }
+});
