@@ -58,7 +58,7 @@ const Perfil = () => {
                 </div>
             ) : (
                 <div>
-                    <h1 className="perfil-title">Perfil</h1>
+                    <h1 className="perfil-title">No has iniciado sesión</h1>
                     <p className="login-message">Inicia sesión para mejorar tu experiencia</p>
                 </div>
             )}
