@@ -51,10 +51,10 @@ function CustomNavbar() {
           <Nav>
             {isUserLoggedIn ? (
               <>
-                <Nav.Link href="/Perfil" className="nav-link-custom">
+                <Nav.Link href="#profile" className="nav-link-custom">
                   <img
                     src={user?.photoURL || "path/to/default-photo.jpg"}
-                    alt="Perfil"
+                    alt="Profile"
                     width="50"
                     height="50"
                     className="rounded-circle"
