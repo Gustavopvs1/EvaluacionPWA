@@ -1,11 +1,8 @@
-// Crear las variables de cache
-const CACHE_DYNAMIC = 'dynamic-v1'; // Para los archivos que se van a descargar
-const CACHE_STATIC = 'static-v1'; // App shell
-const CACHE_INMUTABLE = 'inmutable-v1'; // CDN de terceros. LIBRERIAS
-
+const CACHE_DYNAMIC = 'dynamic-v1';
+const CACHE_STATIC = 'static-v1';
+const CACHE_INMUTABLE = 'inmutable-v1';
 const CACHE_DYNAMIC_LIMIT = 50;
 
-// Función para limpiar el cache
 const limpiarCache = (cacheName, numberItem) => {
     caches.open(cacheName)
         .then(cache => {
@@ -13,7 +10,7 @@ const limpiarCache = (cacheName, numberItem) => {
                 .then(keys => {
                     if (keys.length > numberItem) {
                         cache.delete(keys[0])
-                            .then(() => limpiarCache(cacheName, numberItem)); // Corrección: debe llamarse limpiarCache nuevamente después de la eliminación
+                            .then(() => limpiarCache(cacheName, numberItem));
                     }
                 });
         });
@@ -24,12 +21,14 @@ self.addEventListener('install', event => {
         return cache.addAll([
             '/',
             '/index.html',
+            '/perfil.html', // Agregar la página de perfil al caché estático
+            '/editarperfil.html', // Agregar la página de edición de perfil al caché estático
             '/js/app.js',
             '/sw.js',
-            'static/js/bundle.js',
-            'favicon.ico',
-            './pages/offline.html',
-            '/not-found.jpg' // Agregar la imagen not-found.jpg al cache estático
+            '/static/js/bundle.js',
+            '/favicon.ico',
+            '/pages/offline.html',
+            '/not-found.jpg'
         ]);
     });
     const cacheInmutable = caches.open(CACHE_INMUTABLE).then(cache => {
@@ -41,27 +40,42 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-    // Cache with network fallback
-    const respuesta = caches.match(event.request)
-        .then(response => {
-            if (response) return response;
-            // Si no existe el archivo, verifica si hay conexión
-            if (!navigator.onLine) {
-                // Si no hay conexión, responde con la imagen not-found.jpg desde el cache estático
-                return caches.match('/not-found.jpg');
-            }
-            // Si hay conexión, descarga el archivo
-            return fetch(event.request)
-                .then(newResponse => {
-                    caches.open(CACHE_DYNAMIC)
-                        .then(cache => {
-                            cache.put(event.request, newResponse);
-                            limpiarCache(CACHE_DYNAMIC, CACHE_DYNAMIC_LIMIT);
-                        });
-                    return newResponse.clone();
-                });
-        });
-    event.respondWith(respuesta);
+    const request = event.request;
+    const url = new URL(request.url);
+
+    // Si la solicitud es para la página de perfil o editar perfil, intenta servirla desde la caché
+    if (url.pathname === '/perfil.html' || url.pathname === '/editarperfil.html') {
+        event.respondWith(
+            caches.match(request).then(response => {
+                return response || fetch(request);
+            }).catch(() => {
+                return caches.match('/offline.html');
+            })
+        );
+        return;
+    }
+
+    // Para otras solicitudes, intenta servirlas desde la caché, y si no está en caché, intenta obtenerlas de la red
+    event.respondWith(
+        caches.match(request).then(response => {
+            return response || fetch(request).catch(() => {
+                return caches.match('/not-found.jpg'); // Si la solicitud falla, servir la imagen not-found.jpg
+            });
+        })
+    );
+});
+
+// Manejar los mensajes del cliente
+self.addEventListener('message', (event) => {
+    if (event.data.action === 'saveUserData') {
+        // Almacenar los datos del usuario en el almacenamiento local (local storage)
+        localStorage.setItem('userData', JSON.stringify(event.data.userData));
+    } else if (event.data.action === 'getUserData') {
+        // Obtener los datos del usuario del almacenamiento local (local storage)
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        // Enviar los datos del usuario al cliente
+        event.source.postMessage({ action: 'userData', userData });
+    }
 });
 
 // Event listeners para manejar la conexión
@@ -78,16 +92,3 @@ self.addEventListener('offline', sendConnectionStatus);
 
 // Inicializa el estado de conexión al inicio
 sendConnectionStatus();
-
-// Manejar los mensajes del cliente
-self.addEventListener('message', (event) => {
-    if (event.data.action === 'saveUserData') {
-        // Almacenar los datos del usuario en el almacenamiento local (local storage)
-        localStorage.setItem('userData', JSON.stringify(event.data.userData));
-    } else if (event.data.action === 'getUserData') {
-        // Obtener los datos del usuario del almacenamiento local (local storage)
-        const userData = JSON.parse(localStorage.getItem('userData'));
-        // Enviar los datos del usuario al cliente
-        event.source.postMessage({ action: 'userData', userData });
-    }
-});
