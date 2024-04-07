@@ -1,46 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
-import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import { auth, firestore } from '../firebase';
 import './Perfil.css';
 
 const Perfil = () => {
-    const [userData, setUserData] = useState(null); 
+    const [userData, setUserData] = useState(null);
+    const [savedImages, setSavedImages] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        
         const fetchUserData = async () => {
-            // Acceder al usuario actualmente autenticado
             const user = auth.currentUser;
 
             if (user) {
-                // Obtener la información del usuario (correo electrónico y nombre)
                 const { email, displayName, photoURL } = user;
-                // Actualizar el estado con la información del usuario
                 setUserData({ email, displayName, photoURL });
-                // Guardar los datos del usuario en el almacenamiento local (local storage)
                 localStorage.setItem('userData', JSON.stringify({ email, displayName, photoURL }));
+
+               
+                const userImagesRef = firestore.collection('users').doc(user.uid).collection('savedImages');
+                const snapshot = await userImagesRef.get();
+                const images = snapshot.docs.map(doc => doc.data());
+                setSavedImages(images);
             } else {
-                // Si el usuario no está autenticado, intentar obtener los datos del almacenamiento local
                 const storedUserData = localStorage.getItem('userData');
                 if (storedUserData) {
-                    // Si se encuentran datos en el almacenamiento local, actualizar el estado con esos datos
                     setUserData(JSON.parse(storedUserData));
                 }
             }
         };
 
-        fetchUserData(); 
-    }, []); 
-    
+        fetchUserData();
+    }, []);
+
     const handleEditProfile = () => {
-        
-        navigate("/editarperfil");
+        navigate('/editarperfil');
     };
 
     return (
         <div className="perfil-container">
-            {userData ? ( // Verificar si se encontraron datos del usuario
+            {userData ? (
                 <div>
                     <h1 className="perfil-title">Perfil</h1>
                     <div className="perfil-info">
@@ -54,6 +53,12 @@ const Perfil = () => {
                             <p>{userData.displayName}</p>
                             <button className="edit-profile-button" onClick={handleEditProfile}>Editar perfil</button>
                         </div>
+                    </div>
+                    <div className="saved-images">
+                        <h3>Imágenes guardadas:</h3>
+                        {savedImages.map((image, index) => (
+                            <img key={index} src={image.url} alt={`Imagen guardada ${index}`} className="saved-image" />
+                        ))}
                     </div>
                 </div>
             ) : (

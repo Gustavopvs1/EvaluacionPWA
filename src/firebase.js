@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging, getToken } from "firebase/messaging";
+import { getFirestore } from 'firebase/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -14,6 +15,7 @@ const firebaseConfig = {
 };
 // Initialize Firebase Auth provider
 const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 
@@ -24,5 +26,7 @@ provider.setCustomParameters({
 export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 const analytics = getAnalytics(app);
+
+export {firestore }; 
 
 export const messaging = getMessaging(app);
