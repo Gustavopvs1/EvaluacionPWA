@@ -1,0 +1,12 @@
+.customaActive {
+    color: white !important;
+    background-color:rgb(33, 25, 34);
+}
+
+.profileActive {
+ outline: 5px solid rgb(33, 25, 34);
+ border-spacing: 5px;
+}
+.customaActive :hover {
+    color: white !important;
+}
