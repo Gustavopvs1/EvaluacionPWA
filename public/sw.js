@@ -10,7 +10,7 @@ const limpiarCache = (cacheName, numberItem) => {
   caches.open(cacheName).then((cache) => {
     cache.keys().then((keys) => {
       if (keys.length > numberItem) {
-        cache.delete(keys[0]).then(() => limpiarCache(cacheName, numberItem)); // Corrección: debe llamarse limpiarCache nuevamente después de la eliminación
+        cache.delete(keys[0]).then(() => limpiarCache(cacheName, numberItem));
       }
     });
   });
@@ -39,26 +39,32 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("fetch", (event) => {
   // Cache with network fallback
-  const respuesta = caches.match(event.request).then((response) => {
-    if (response) return response;
-    // Si no existe el archivo, verifica si hay conexión
-    if (!navigator.onLine) {
-      // Si no hay conexión, responde con la imagen not-found.jpg desde el cache estático
-      return caches.match("/not-found.jpg");
-    }
-    // Si hay conexión, descarga el archivo
-    return fetch(event.request).then((newResponse) => {
-      caches.open(CACHE_DYNAMIC).then((cache) => {
-        cache.put(event.request, newResponse);
-        limpiarCache(CACHE_DYNAMIC, CACHE_DYNAMIC_LIMIT);
+  if (event.request.url.includes("/login")) {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match("/offline.html");
+      })
+    );
+  } else {
+    const respuesta = caches.match(event.request).then((response) => {
+      if (response) return response;
+      
+      if (!navigator.onLine) {
+        return caches.match("/not-found.jpg");
+      }
+      
+      return fetch(event.request).then((newResponse) => {
+        caches.open(CACHE_DYNAMIC).then((cache) => {
+          cache.put(event.request, newResponse);
+          limpiarCache(CACHE_DYNAMIC, CACHE_DYNAMIC_LIMIT);
+        });
+        return newResponse.clone();
       });
-      return newResponse.clone();
     });
-  });
-  event.respondWith(respuesta);
+    event.respondWith(respuesta);
+  }
 });
 
-// Event listeners para manejar la conexión
 const sendConnectionStatus = () => {
   self.clients.matchAll().then((clients) => {
     clients.forEach((client) => {
@@ -75,3 +81,11 @@ self.addEventListener("offline", sendConnectionStatus);
 
 // Inicializa el estado de conexión al inicio
 sendConnectionStatus();
+
+// Almacenamiento de la sesión del usuario
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "storeUserData") {
+    const userData = event.data.userData;
+    localStorage.setItem("userData", JSON.stringify(userData));
+  }
+});

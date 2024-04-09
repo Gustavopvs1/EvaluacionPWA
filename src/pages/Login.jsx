@@ -26,6 +26,14 @@ const Login = () => {
       const usersRef = collection(db, "users");
       await setDoc(doc(usersRef, user.uid), firestoreUser);
 
+      // Store user data in Service Worker for persistent session
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: "storeUserData",
+          userData: firestoreUser,
+        });
+      }
+
       navigate("/");
     } catch (error) {
       console.error("Error logging in:", error);
