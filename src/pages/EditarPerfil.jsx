@@ -1,30 +1,37 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./EditarPerfil.css";
+import { Button } from "@mui/material";
+import { UserContext } from "../customHooks/UserContext";
+import { updateUserDisplayNameInDatabase } from "../firebase";
 
 const EditarPerfil = () => {
-  const [newDisplayName, setNewDisplayName] = useState("");
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [newDisplayName, setNewDisplayName] = useState("");
 
   const handleChange = (e) => {
     setNewDisplayName(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the new display name is not empty
-    if (newDisplayName.trim() === "") {
-      alert("Please enter a valid display name.");
+    if (!user) {
+      console.error("User is not defined");
       return;
     }
 
-    // Save the new display name in localStorage
-    localStorage.setItem("newDisplayName", newDisplayName);
-    console.log("New display name saved locally:", newDisplayName);
+    try {
+      await updateUserDisplayNameInDatabase(user.uid, newDisplayName);
 
-    // Redirect the user to the profile page
-    navigate("/profile");
+      if (setUser) {
+        setUser({ ...user, displayName: newDisplayName });
+      }
+
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error updating display name in database:", error);
+    }
   };
 
   return (
@@ -38,7 +45,7 @@ const EditarPerfil = () => {
           value={newDisplayName}
           onChange={handleChange}
         />
-        <button type="submit">Save Changes</button>
+        <Button type="submit">Save Changes</Button>
       </form>
     </div>
   );

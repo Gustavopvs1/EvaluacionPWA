@@ -1,3 +1,20 @@
+.bg-pinterest{
+    /* background: radial-gradient(circle, rgba(250,4,81,1) 0%, rgba(227,73,191,1) 100%, rgba(252,70,173,1) 100%); */
+}
+
+.customaActive {
+    color: white !important;
+    background-color:rgb(33, 25, 34);
+}
+
+.profileActive {
+ outline: 5px solid rgb(33, 25, 34);
+ border-spacing: 5px;
+}
+.customaActive :hover {
+    color: white !important;
+}
+
 .customaActive {
     color: white !important;
     background-color:rgb(33, 25, 34);

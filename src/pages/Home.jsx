@@ -10,7 +10,7 @@ const Home = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const accessKey = "bQuu4Cl1wW3kgLiTUKmBkRecQuesC31H0wEp8AjPdHg";
+        const accessKey = "73m9zE9ivuue_6Dl-i9sqsRUJGDdTGs9upcq3MNDf4I";
         const count = 5;
         const response = await axios.get(
           `https://api.unsplash.com/photos/random?count=${count}&client_id=${accessKey}`

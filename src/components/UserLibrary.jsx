@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, doc, getFirestore, getDoc } from "firebase/firestore";
 import { UserContext } from "../customHooks/UserContext";
-import { CategoryContext } from "../pages/Perfi";
+import { CategoryContext } from "../pages/Perfil";
 import "./UserLibrary.css";
 
 const UserLibrary = memo(() => {

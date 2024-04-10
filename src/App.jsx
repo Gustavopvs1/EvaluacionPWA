@@ -15,7 +15,7 @@ import "@fontsource/roboto/400.css"; // Import only the necessary font weights
 import "@fontsource/roboto/500.css";
 
 const Home = lazy(() => import("./pages/Home"));
-const Perfil = lazy(() => import("./pages/Perfi"));
+const Perfil = lazy(() => import("./pages/Perfil"));
 const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const EditarPerfil = lazy(() => import("./pages/EditarPerfil"));
