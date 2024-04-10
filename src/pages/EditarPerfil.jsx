@@ -22,15 +22,13 @@ const EditarPerfil = () => {
     }
 
     try {
-      // Actualizar el nombre en la base de datos
       await updateUserDisplayNameInDatabase(user.uid, newDisplayName);
 
-      // Actualizar el nombre en el contexto de usuario si es necesario
       if (setUser) {
         setUser({ ...user, displayName: newDisplayName });
       }
 
-      navigate("/perfil");
+      navigate("/profile");
     } catch (error) {
       console.error("Error updating display name in database:", error);
     }

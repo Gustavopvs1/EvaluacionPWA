@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Avatar, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import UserLibrary from "../components/UserLibrary";
 import { UserContext } from "../customHooks/UserContext";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import "./Perfil.css";
 
 // Create a context for managing the selected category
@@ -12,6 +13,23 @@ const Perfil = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [showCategory, setShowCategory] = useState("saved");
+  const [displayName, setDisplayName] = useState("");
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (user) {
+        const db = getFirestore();
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          setDisplayName(userData.displayName);
+        }
+      }
+    };
+
+    loadUserData();
+  }, [user]);
 
   const handleEditProfile = () => {
     navigate("/editProfile");
@@ -36,7 +54,7 @@ const Perfil = () => {
               <h3>{user.email}</h3>
             </div>
             <div className="perfil-section">
-              <h3>{user.displayName}</h3>
+              <h3>{displayName}</h3>
               <Button
                 className="mt-2 rounded-4 p-2 fs-6 fw-bold"
                 variant="secondary"

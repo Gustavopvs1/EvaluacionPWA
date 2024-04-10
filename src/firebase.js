@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging } from "firebase/messaging";
 import { getAuth, signInWithPopup, GoogleAuthProvider, updateProfile } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // Asegúrate de importar getFirestore
+import { getFirestore, collection, doc, updateDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBNpMdPs4vbAYYm1E1kB6lgNHhOThjCU-k",
@@ -13,12 +13,10 @@ const firebaseConfig = {
   appId: "1:743352793339:web:48609ce2a255adca4cd85e",
   measurementId: "G-SJQLX7EBP3"
 };
-// Inicializar la aplicación Firebase
 const app = initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider();
 
-// Forzar al usuario a seleccionar una cuenta cuando interactúa con el proveedor
 provider.setCustomParameters({
   prompt: "select_account ",
 });
@@ -27,13 +25,13 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
 const analytics = getAnalytics(app);
 
-// Asegúrate de inicializar Firestore correctamente
-export const firestore = getFirestore(app); // Asegúrate de inicializar Firestore correctamente
+
+export const firestore = getFirestore(app); 
 export const messaging = getMessaging(app);
 
 export const updateUserDisplayNameInDatabase = async (userId, newDisplayName) => {
   try {
-    await firestore.collection("users").doc(userId).update({
+    await updateDoc(doc(collection(firestore, "users"), userId), {
       displayName: newDisplayName,
     });
   } catch (error) {
